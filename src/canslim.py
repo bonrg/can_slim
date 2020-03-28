@@ -47,26 +47,64 @@ def get_quarter_eps_values(eps_data: dict) -> tuple:
 def get_percantage_ratio(*args) -> str:
     val1, val2 = args
     ratio = (val1 - val2) / val2 * 100
-    return f'{ratio:.1f}%'
+    return f'{ratio:.1f}'
 
 
-def form_chart(ticker: str, eps_data: dict):
-    """Forming chart from last year eps values"""
+def form_chart_quarter_eps(ticker: str, eps_data: dict):
+    """Forming chart from last year quarter eps values"""
     last_year = list(eps_data.keys())[0].split('-')[0]
     data_frame = {key: value for (key, value) in eps_data.items() if last_year in key}
-    plt.bar(*zip(*data_frame.items()))
-    plt.savefig(f'{config.IMG_DIR}/{ticker}')
+    fig1, ax1 = plt.subplots()
+    ax1.bar(*zip(*data_frame.items()))
+    fig1.savefig(f'{config.IMG_DIR}/{ticker}_q_eps')
+    plt.close(fig1)
 
 
+def get_annual_eps_value(eps_data: dict):
+    """calculate annual EPS values"""
+    last_year = int(list(eps_data.keys())[0].split('-')[0])
+    year_1 = str(last_year - 1)
+    year_2 = str(last_year - 2)
+    year_3 = str(last_year - 3)
+    eps_sum_last_year = sum([v for (k, v) in eps_data.items() if str(last_year) in k])
+    eps_sum_year_1 = sum([v for (k, v) in eps_data.items() if year_1 in k])
+    eps_sum_year_2 = sum([v for (k, v) in eps_data.items() if year_2 in k])
+    eps_sum_year_3 = sum([v for (k, v) in eps_data.items() if year_3 in k])
+    years = [str(last_year), year_1, year_2, year_3]
+    values = [eps_sum_last_year, eps_sum_year_1, eps_sum_year_2, eps_sum_year_3]
+    return dict(zip(years, values))
+
+
+def get_annual_percentage_ratio(**kwargs):
+    keys = list(kwargs.keys())[0:-1]
+    values = list(kwargs.values())
+    pair_values = tuple(zip(values[::1], values[1::1]))
+    percentage_ratio = [f'{get_percantage_ratio(*v)}%' for v in pair_values]
+    return dict(zip(keys, percentage_ratio))
+
+
+def form_chart_annual_eps(ticker: str, eps_data_annual: dict):
+    """Forming chart sum of annual eps values"""
+    fig2, ax2 = plt.subplots()
+    ax2.bar(*zip(*eps_data_annual.items()))
+    fig2.savefig(f'{config.IMG_DIR}/{ticker}_a_eps')
+    plt.close(fig2)
+
+
+def check_ticker(ticker: str) -> dict:
+    try:
+        json = {"normalizedTicker": ticker.upper()}
+        request = requests.post(config.TICKER_URL, json=json, timeout=config.TIMEOUT)
+        if request.status_code == 200:
+            return request.json()
+    except Exception as e:
+        logger.warning(e)
 
 
 if __name__ == '__main__':
-    ticker = "ATVI"
-    cont = get_html_text(ticker)
-    tabl = get_eps_data(cont)
-    val = get_quarter_eps_values(tabl)
-    rat = get_percantage_ratio(*val)
-    print(rat)
-    print(tabl)
-    form_chart(ticker, tabl)
+    ticker = "MSFT"
+    t = check_ticker(ticker)
+    print(t)
+
+
 
