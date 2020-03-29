@@ -29,6 +29,8 @@ logging.config.dictConfig(LOGGING)
 # ----------------------------------------------------------------------------------------------------------------------
 TICKER_URL = 'https://www.nyse.com/api/quotes/filter'
 EPS_URL = 'https://ycharts.com/companies/'
+ROE_URL = 'https://www.macrotrends.net/stocks/charts/'
+ROE_TICKER_URL = 'https://www.macrotrends.net/assets/php/ticker_search_list.php?_=1585413925067'
 
 HEADER = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) '
                         'Ubuntu Chromium/80.0.3987.87 Chrome/80.0.3987.87 Safari/537.36'}
