@@ -104,15 +104,24 @@ def form_chart_annual_eps(ticker: str, eps_data_annual: dict):
     plt.close(fig2)
 
 
-def check_ticker(ticker: str) -> dict:
+def check_ticker_nyse(ticker: str) -> dict:
     try:
         json = {"normalizedTicker": ticker.upper()}
-        request = requests.post(config.TICKER_URL, json=json, timeout=config.TIMEOUT)
+        request = requests.post(config.NYSE_TICKER_URL, json=json, timeout=config.TIMEOUT)
         if request.status_code == 200:
             return request.json()
     except Exception as e:
         logger.warning(e)
 
+
+def check_ticker_nasdaq(ticker: str) -> dict:
+    try:
+        request = requests.get(f'{config.NASDAQ_TICKER_URL}{ticker.upper()}/info?assetclass=stocks',
+                               timeout=config.TIMEOUT)
+        if request.status_code == 200 and request.json().get('status').get('rCode') == 200:
+            return request.json()
+    except Exception as e:
+        logger.warning(e)
 
 def get_url_param_for_roe(ticker: str) -> str:
     try:
@@ -169,15 +178,17 @@ def form_chart_annual_roe(ticker: str, roe_data: dict):
 
 
 if __name__ == '__main__':
-    ticker = "UBER"
-    html = get_html_eps(ticker)
-    eps = get_eps_data(html)
-    eps_annual = get_annual_eps_value(eps)
-    per = get_annual_percentage_ratio(**eps_annual)
-    form_chart_annual_eps(ticker, eps_annual)
-    form_chart_quarter_eps(ticker, eps)
-    print(eps_annual)
-    print(per)
+    ticker = "ATVI"
+    info = check_ticker_nasdaq(ticker)
+    print(info)
+    # html = get_html_eps(ticker)
+    # eps = get_eps_data(html)
+    # eps_annual = get_annual_eps_value(eps)
+    # per = get_annual_percentage_ratio(**eps_annual)
+    # form_chart_annual_eps(ticker, eps_annual)
+    # form_chart_quarter_eps(ticker, eps)
+    # print(eps_annual)
+    # print(per)
     # form_chart_annual_eps(ticker, eps_annual)
     # form_chart_quarter_eps(ticker, eps)
 

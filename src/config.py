@@ -27,7 +27,8 @@ LOGGING = {
 }
 logging.config.dictConfig(LOGGING)
 # ----------------------------------------------------------------------------------------------------------------------
-TICKER_URL = 'https://www.nyse.com/api/quotes/filter'
+NYSE_TICKER_URL = 'https://www.nyse.com/api/quotes/filter'
+NASDAQ_TICKER_URL = 'https://api.nasdaq.com/api/quote/'
 EPS_URL = 'https://ycharts.com/companies/'
 ROE_URL = 'https://www.macrotrends.net/stocks/charts/'
 ROE_TICKER_URL = 'https://www.macrotrends.net/assets/php/ticker_search_list.php?_=1585413925067'
